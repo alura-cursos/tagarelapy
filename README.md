@@ -19,6 +19,11 @@ Rodando um teste simples
 - Rode `jupyter notebook` e abra o notebook `notebooks/Uso do transcritor`
 - Coloque o vídeo raw, formato mp4, em `data/raw`
 
+Rodando tudo no data/raw
+------------------------
+
+Basta executar `make data` para processar todos os arquivos de `data/raw`.
+
 TODO
 ----
 
