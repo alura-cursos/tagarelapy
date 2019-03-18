@@ -5,16 +5,17 @@ import ffmpy
 
 class Transcriptor:
 
-	def __init__(self, basename):
+	def __init__(self, basename, basefolder="../"):
+		self.basefolder = basefolder
 		self.basename = basename
 
 	def phase1_video_to_audio(self):
-		output = '../data/processed/{}.wav'.format(self.basename)
+		output = '{}data/processed/{}.wav'.format(self.basefolder, self.basename)
 		if os.path.isfile(output):
 			print("Skipping {}".format(output))
 			return
 		ff = ffmpy.FFmpeg(
-			inputs={'../data/raw/{}.mp4'.format(self.basename): None},
+			inputs={'{}data/raw/{}.mp4'.format(self.basefolder, self.basename): None},
 			outputs={output: '-ar 16000 -ac 1'}
 		)
 		print(ff.cmd)
@@ -25,10 +26,9 @@ class Transcriptor:
 
 		# from google.cloud import storage
 		from google.cloud import storage
-
 		
-		source_file_name = '../data/processed/{}.wav'.format(self.basename)
-		print("Reading {}".format(source_file_name))
+		source_file_name = '{}data/processed/{}.wav'.format(self.basefolder, self.basename)
+		print("Sending {} to the cloud".format(source_file_name))
 
 		bucket_name = "transcription-processed-wav"
 		destination_blob_name = '{}.wav'.format(self.basename)
@@ -52,6 +52,7 @@ class Transcriptor:
 		client = speech.SpeechClient()
 
 		gcs_uri = "gs://transcription-processed-wav/{}.wav".format(self.basename)
+		print('Transcribing {}'.format(gcs_uri))
 
 		audio = types.RecognitionAudio(uri=gcs_uri)
 		config = types.RecognitionConfig(
@@ -74,7 +75,7 @@ class Transcriptor:
 			print(u'Transcript: {}'.format(result.alternatives[0].transcript))
 			print('Confidence: {}'.format(result.alternatives[0].confidence))
 
-		return TranscriptionResult(self.basename, response)
+		return TranscriptionResult(self.basename, response, basefolder=self.basefolder)
 
 def short_transcribe(file_name):
 
@@ -87,7 +88,7 @@ def short_transcribe(file_name):
 	from google.cloud.speech import types
 
 	# The name of the audio file to transcribe)
-	input_file = '../data/processed/{}.wav'.format(file_name)
+	input_file = '{}data/processed/{}.wav'.format(self.basefolder, file_name)
 	print("Reading {}".format(input_file))
 
 	# Loads the audio into memory
@@ -109,11 +110,12 @@ def short_transcribe(file_name):
 	for result in response.results:
 		print('Transcript: {}'.format(result.alternatives[0].transcript))
 
-	return TranscriptionResult(file_name, response)
+	return TranscriptionResult(file_name, response, basefolder=self.basefolder)
 
 class TranscriptionResult:
 	
-	def __init__(self, basename, response):
+	def __init__(self, basename, response, basefolder = '../'):
+		self.basefolder = basefolder
 		self.basename = basename
 		self.response = response
 
@@ -157,7 +159,7 @@ class TranscriptionResult:
 
 	def save_json(self):
 		import simplejson as json
-		output = '../reports/{}.json'.format(self.basename)
+		output = '{}reports/{}.json'.format(self.basefolder, self.basename)
 		print("Salvando arquivo {}".format(output))
 		with open(output, 'w') as outfile:  
 			content = self.to_json()

@@ -22,8 +22,15 @@ Rodando um teste simples
 TODO
 ----
 
-- src/data/make_dataset.py: código command line que parseia todos os arquivos em um diretório
-- editor de captioning
+- gerar o texto todo concatenado com marcacoes de tempo a cada N ponto final se ja passaram pelo menos 30 segundos
+- exportar em TXT baseado no nome do arquivo (id)
+- usar o padrao do nome do arquivo pra ja saber qual o ID do video na plataforma, assim o txt na verdade ja vira um "UPDATE WHERE explanaion_id=X'
+- transcrever alguns batches
+
+Pirações:
+---------
+
+- achar editor de captioning
 - visualizador simples de captioning com GOTO e show screenshot
 - armazenar onde ficou importante screenshot
 - testar algoritmo
