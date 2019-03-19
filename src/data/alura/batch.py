@@ -14,6 +14,7 @@ def batch_single(filename):
     t.upload_audio()
     result = t.transcribe()
     result.save_json()
+    response.save_markdown()
 
 def batch_all(folder):
     onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]

@@ -24,12 +24,6 @@ Rodando tudo no data/raw
 
 Basta executar `make data` para processar todos os arquivos de `data/raw`.
 
-TODO
-----
-
-- gerar o texto todo concatenado com links pras imagens
-- exportar em TXT baseado no nome do arquivo (id)
-
 Possíveis features:
 -------------------
 
@@ -82,8 +76,3 @@ Organização do projeto
     │       └── visualize.py
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
-
-
---------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

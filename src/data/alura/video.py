@@ -15,7 +15,7 @@ class Video:
 			outputs={output: '-vframes 1'}
 		)
 		print(ff.cmd)
-		return ff.run()
+		return output
 
 	def to_wav(self):
 		output = '{}data/processed/{}.wav'.format(self.basefolder, self.basename)

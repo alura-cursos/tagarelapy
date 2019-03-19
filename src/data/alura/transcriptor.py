@@ -1,6 +1,5 @@
 import io
 import os
-from alura.video import *
 
 class Transcriptor:
 
@@ -106,7 +105,7 @@ class WordTransformer:
 
 	def __init__(self):
 		self.marks = ".!?"
-		self.delta_mark = 30
+		self.delta_mark = 60
 		self.last_mark_at = 0 - (self.delta_mark / 2)
 
 	def finishes_with_marker(self, word):
@@ -129,6 +128,7 @@ class WordTransformer:
 			if should_mark:
 				seconds = word['start_time']['seconds']
 				self.last_mark_at = seconds
+			word['has_breakline'] = self.finishes_with_marker(word['word'])
 			word['has_time_mark'] = should_mark
 		return alternative
 
@@ -178,7 +178,33 @@ class TranscriptionResult:
 		obj = self.to_dict(timemarker = WordTransformer())
 		return json.dumps(obj, sort_keys=True, indent=4)
 
+	def save_markdown(self):
+		from alura.video import Video
+		alternatives = self.to_dict(timemarker = WordTransformer())
+		video = Video(self.basename, self.basefolder)
+		markdown = []
+		for alternative in alternatives:
+			for word in alternative['words']:
+				markdown.append(word['word'])
+				if word['has_time_mark']:
+					seconds = word['start_time']['seconds']
+					nanoseconds = word['start_time']['nanos']
+					image_path = video.snapshot(seconds, nanoseconds)
+					markdown.append("\n\n![alt text]({})\n\n".format(image_path))
+
+					minutes = seconds / 60
+					second_in_minute = seconds % 60
+					markdown.append("({:.0f}:{})".format(minutes, second_in_minute))
+				elif word['has_breakline']:
+					markdown.append("\n\n")
+		markdown = " ".join(markdown)
+		output_file = "{}data/processed/{}.md".format(self.basefolder, self.basename)
+		with open(output_file, "w") as text_file:
+			text_file.write(markdown)
+		return markdown
+
 	def save_snapshots(self):
+		from alura.video import Video
 		alternatives = self.to_dict(timemarker = WordTransformer())
 		video = Video(self.basename, self.basefolder)
 		for alternative in alternatives:
@@ -195,3 +221,4 @@ class TranscriptionResult:
 		with open(output, 'w') as outfile:  
 			content = self.to_json()
 			outfile.write(content)
+
