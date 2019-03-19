@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # load up the .env entries as environment variables
     load_dotenv(find_dotenv())
 
-    credential_path = "data/keys/Guilherme-Transcricao-c17ea3445022.json"
+    credential_path = "data/keys/gcloud-key.json"
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
     batch_all('data/raw')

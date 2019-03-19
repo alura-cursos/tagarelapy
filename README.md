@@ -9,7 +9,7 @@ Setup
 - Instalar o gcloud https://cloud.google.com/sdk/install
 - Caso você já possua o gcloud configurado para outro projeto, você pode fazer `gcloud config configurations create` e `gcloud config configurations activate`  para ativar uma configuração nova que desejar
 - Rodar `python3 setup.py develop`
-- Colocar sua chave do google cloud em ../data/keys/Guilherme-Transcricao-c17ea3445022.json
+- Colocar sua chave do google cloud em ../data/keys/gcloud-key.json
 - Criar um bucket chamdo `transcription-processed-wav` em https://console.cloud.google.com/storage/browser
 - Alterar as permissões do bucket para que o service account ligado ao json possa manipular objetos no bucket https://console.cloud.google.com/storage/browser/transcription-processed-wav
 
@@ -27,10 +27,8 @@ Basta executar `make data` para processar todos os arquivos de `data/raw`.
 TODO
 ----
 
-- gerar o texto todo concatenado com marcacoes de tempo a cada N ponto final se ja passaram pelo menos 30 segundos
+- gerar o texto todo concatenado com links pras imagens
 - exportar em TXT baseado no nome do arquivo (id)
-- usar o padrao do nome do arquivo pra ja saber qual o ID do video na plataforma, assim o txt na verdade ja vira um "UPDATE WHERE explanaion_id=X'
-- transcrever alguns batches
 
 Possíveis features:
 -------------------

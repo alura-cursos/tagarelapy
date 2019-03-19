@@ -1,5 +1,6 @@
 import io
 import os
+from alura.video import *
 
 class Transcriptor:
 
@@ -8,17 +9,7 @@ class Transcriptor:
 		self.basename = basename
 
 	def video_to_audio(self):
-		import ffmpy
-		output = '{}data/processed/{}.wav'.format(self.basefolder, self.basename)
-		if os.path.isfile(output):
-			print("Skipping {}".format(output))
-			return
-		ff = ffmpy.FFmpeg(
-			inputs={'{}data/raw/{}.mp4'.format(self.basefolder, self.basename): None},
-			outputs={output: '-ar 16000 -ac 1'}
-		)
-		print(ff.cmd)
-		return ff.run()
+		Video(self.basename, self.basefolder).to_wav()
 
 	def upload_audio(self):
 		"""Uploads a file to the bucket."""
@@ -112,6 +103,7 @@ def short_transcribe(file_name):
 	return TranscriptionResult(file_name, response, basefolder=self.basefolder)
 
 class WordTransformer:
+
 	def __init__(self):
 		self.marks = ".!?"
 		self.delta_mark = 30
@@ -135,7 +127,8 @@ class WordTransformer:
 		for word in alternative['words']:
 			should_mark = self.finishes_with_marker(word['word']) and self.has_elapsed_time(word['start_time'])
 			if should_mark:
-				self.last_mark_at = word['start_time']['seconds']
+				seconds = word['start_time']['seconds']
+				self.last_mark_at = seconds
 			word['has_time_mark'] = should_mark
 		return alternative
 
@@ -179,11 +172,21 @@ class TranscriptionResult:
 		if timemarker:
 			alternatives = list(map(timemarker.mark, alternatives))
 		return alternatives
-	
+
 	def to_json(self):
 		import simplejson as json
 		obj = self.to_dict(timemarker = WordTransformer())
 		return json.dumps(obj, sort_keys=True, indent=4)
+
+	def save_snapshots(self):
+		alternatives = self.to_dict(timemarker = WordTransformer())
+		video = Video(self.basename, self.basefolder)
+		for alternative in alternatives:
+			for word in alternative['words']:
+				if word['has_time_mark']:
+					seconds = word['start_time']['seconds']
+					nanoseconds = word['start_time']['nanos']
+					video.snapshot(seconds, nanoseconds)	
 
 	def save_json(self):
 		import simplejson as json
