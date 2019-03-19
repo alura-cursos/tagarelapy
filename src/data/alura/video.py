@@ -9,12 +9,13 @@ class Video:
 	def snapshot(self, seconds, nanoseconds = 0):
 		timestamp = '{}.{}'.format(seconds, nanoseconds)
 		output = '{}data/processed/{}-{}.jpg'.format(self.basefolder, self.basename, timestamp)
-		seek = '-ss {}'.format(timestamp)
+		seek = '-y -ss {}'.format(timestamp)
 		ff = ffmpy.FFmpeg(
 			inputs={'{}data/raw/{}.mp4'.format(self.basefolder, self.basename): seek},
 			outputs={output: '-vframes 1'}
 		)
 		print(ff.cmd)
+		ff.run()
 		return output
 
 	def to_wav(self):

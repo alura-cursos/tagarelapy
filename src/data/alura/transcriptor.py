@@ -190,9 +190,9 @@ class TranscriptionResult:
 					seconds = word['start_time']['seconds']
 					nanoseconds = word['start_time']['nanos']
 					image_path = video.snapshot(seconds, nanoseconds)
-					markdown.append("\n\n![alt text]({})\n\n".format(image_path))
+					markdown.append("\n\n![imagem]({})\n\n".format(image_path))
 
-					minutes = seconds / 60
+					minutes = int(seconds / 60)
 					second_in_minute = seconds % 60
 					markdown.append("({:.0f}:{})".format(minutes, second_in_minute))
 				elif word['has_breakline']:
