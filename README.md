@@ -32,13 +32,13 @@ TODO
 - usar o padrao do nome do arquivo pra ja saber qual o ID do video na plataforma, assim o txt na verdade ja vira um "UPDATE WHERE explanaion_id=X'
 - transcrever alguns batches
 
-Pirações:
----------
+Possíveis features:
+-------------------
 
-- achar editor de captioning
+- permitir reindexar tempo se já tem o json
+- editor de captioning
 - visualizador simples de captioning com GOTO e show screenshot
-- armazenar onde ficou importante screenshot
-- testar algoritmo
+- testar algoritmo para detectar pausas
 
 Organização do projeto
 ------------
@@ -69,8 +69,6 @@ Organização do projeto
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
     │   ├── data           <- Scripts to download or generate data
     │   │   └── make_dataset.py
     │   │

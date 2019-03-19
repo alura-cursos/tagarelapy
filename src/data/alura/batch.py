@@ -10,9 +10,9 @@ def batch_single(filename):
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data: {}'.format(filename))
     t = Transcriptor(filename, basefolder="")
-    t.phase1_video_to_audio()
-    t.phase2_upload_audio()
-    result = t.phase3_transcribe()
+    t.video_to_audio()
+    t.upload_audio()
+    result = t.transcribe()
     result.save_json()
 
 def batch_all(folder):

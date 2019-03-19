@@ -1,15 +1,14 @@
 import io
 import os
 
-import ffmpy
-
 class Transcriptor:
 
 	def __init__(self, basename, basefolder="../"):
 		self.basefolder = basefolder
 		self.basename = basename
 
-	def phase1_video_to_audio(self):
+	def video_to_audio(self):
+		import ffmpy
 		output = '{}data/processed/{}.wav'.format(self.basefolder, self.basename)
 		if os.path.isfile(output):
 			print("Skipping {}".format(output))
@@ -21,7 +20,7 @@ class Transcriptor:
 		print(ff.cmd)
 		return ff.run()
 
-	def phase2_upload_audio(self):
+	def upload_audio(self):
 		"""Uploads a file to the bucket."""
 
 		# from google.cloud import storage
@@ -44,7 +43,7 @@ class Transcriptor:
 			destination_blob_name))
 		return destination_blob_name
 
-	def phase3_transcribe(self):
+	def transcribe(self):
 		"""Asynchronously transcribes the audio file specified by the gcs_uri."""
 		from google.cloud import speech
 		from google.cloud.speech import enums
@@ -112,6 +111,34 @@ def short_transcribe(file_name):
 
 	return TranscriptionResult(file_name, response, basefolder=self.basefolder)
 
+class WordTransformer:
+	def __init__(self):
+		self.marks = ".!?"
+		self.delta_mark = 30
+		self.last_mark_at = 0 - (self.delta_mark / 2)
+
+	def finishes_with_marker(self, word):
+		if len(word) < 1:
+			return False
+		last = word[-1]
+		return last in self.marks
+
+	def has_elapsed_time(self, word):
+		# TODO use nanoseconds too
+		current = word['seconds']
+		limit = self.last_mark_at + self.delta_mark
+		if current >= limit:
+			return True
+		return False
+
+	def mark(self, alternative):
+		for word in alternative['words']:
+			should_mark = self.finishes_with_marker(word['word']) and self.has_elapsed_time(word['start_time'])
+			if should_mark:
+				self.last_mark_at = word['start_time']['seconds']
+			word['has_time_mark'] = should_mark
+		return alternative
+
 class TranscriptionResult:
 	
 	def __init__(self, basename, response, basefolder = '../'):
@@ -146,15 +173,16 @@ class TranscriptionResult:
 	def first_alternative(self, result):
 		return result.alternatives[0]
 
-	from operator import attrgetter
-
-	def to_dict(self):
+	def to_dict(self, timemarker = None):
 		alternatives = map(self.first_alternative, self.response.results)
-		return list(map(self.alternative_to_dict, alternatives))
+		alternatives = list(map(self.alternative_to_dict, alternatives))
+		if timemarker:
+			alternatives = list(map(timemarker.mark, alternatives))
+		return alternatives
 	
 	def to_json(self):
 		import simplejson as json
-		obj = self.to_dict()
+		obj = self.to_dict(timemarker = WordTransformer())
 		return json.dumps(obj, sort_keys=True, indent=4)
 
 	def save_json(self):
