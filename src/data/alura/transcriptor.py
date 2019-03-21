@@ -8,6 +8,7 @@ class Transcriptor:
 		self.basename = basename
 
 	def video_to_audio(self):
+		from alura.video import Video
 		Video(self.basename, self.basefolder).to_wav()
 
 	def upload_audio(self):
@@ -54,15 +55,7 @@ class Transcriptor:
 
 		operation = client.long_running_recognize(config, audio)
 
-		print('Waiting for operation to complete...')
 		response = operation.result(timeout=5*60)
-
-		# Each result is for a consecutive portion of the audio. Iterate through
-		# them to get the transcripts for the entire audio file.
-		for result in response.results:
-			# The first alternative is the most likely one for this portion.
-			print(u'Transcript: {}'.format(result.alternatives[0].transcript))
-			print('Confidence: {}'.format(result.alternatives[0].confidence))
 
 		return TranscriptionResult(self.basename, response, basefolder=self.basefolder)
 
@@ -105,7 +98,7 @@ class WordTransformer:
 
 	def __init__(self):
 		self.marks = ".!?"
-		self.delta_mark = 60
+		self.delta_mark = 20
 		self.last_mark_at = 0 - (self.delta_mark / 2)
 
 	def finishes_with_marker(self, word):
@@ -179,22 +172,22 @@ class TranscriptionResult:
 		return json.dumps(obj, sort_keys=True, indent=4)
 
 	def save_markdown(self):
-		from alura.video import Video
+		# from alura.video import Video
 		alternatives = self.to_dict(timemarker = WordTransformer())
-		video = Video(self.basename, self.basefolder)
+		# video = Video(self.basename, self.basefolder)
 		markdown = []
 		for alternative in alternatives:
 			for word in alternative['words']:
 				markdown.append(word['word'])
 				if word['has_time_mark']:
 					seconds = word['start_time']['seconds']
-					nanoseconds = word['start_time']['nanos']
-					image_path = video.snapshot(seconds, nanoseconds)
-					markdown.append("\n\n![imagem]({})\n\n".format(image_path))
+					# nanoseconds = word['start_time']['nanos']
+					# image_path = video.snapshot(seconds, nanoseconds)
+					# markdown.append("\n\n![imagem]({})\n".format(image_path))
 
 					minutes = int(seconds / 60)
 					second_in_minute = seconds % 60
-					markdown.append("({:.0f}:{})".format(minutes, second_in_minute))
+					markdown.append("\n({:.0f}:{})\n".format(minutes, second_in_minute))
 				elif word['has_breakline']:
 					markdown.append("\n\n")
 		markdown = " ".join(markdown)

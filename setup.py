@@ -9,6 +9,6 @@ setup(
     author_email='guilherme.silveira@caelum.com.br',
     license='copyright',
     python_requires='>=3.6',
-    install_requires=['google-cloud-speech','ffmpy','google-cloud-storage','simplejson'],
+    install_requires=['google-cloud-speech','ffmpy','google-cloud-storage','simplejson', 'tqdm'],
 )
 

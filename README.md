@@ -13,6 +13,13 @@ Setup
 - Criar um bucket chamdo `transcription-processed-wav` em https://console.cloud.google.com/storage/browser
 - Alterar as permissões do bucket para que o service account ligado ao json possa manipular objetos no bucket https://console.cloud.google.com/storage/browser/transcription-processed-wav
 
+TODO
+----
+
+- save final `*.md` into `/reports`
+- batch processing support folders
+- support batch audio+upload and transcribing as possible arguments
+
 Rodando um teste simples
 ------------------------
 
