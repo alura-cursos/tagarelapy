@@ -19,6 +19,8 @@ TODO
 - save final `*.md` into `/reports`
 - batch processing support folders
 - support batch audio+upload and transcribing as possible arguments
+- opção para remover audios do cloud após o transcribe
+- option for the number of parallel jobs
 
 Rodando um teste simples
 ------------------------
