@@ -1,5 +1,5 @@
-alura-transcritor
-==============================
+tagarelapy
+==========
 
 O uso do transcritor está no notebook `Uso do transcritor`.
 
